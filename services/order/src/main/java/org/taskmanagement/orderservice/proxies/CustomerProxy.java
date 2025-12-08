@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.taskmanagement.orderservice.dto.CustomerResponse;
 
-@FeignClient(name = "customer-service", url = "https://localhost:8002")
+@FeignClient(name = "customer-service", url = "http://localhost:8002")
 public interface CustomerProxy {
 
     @RequestMapping(method = RequestMethod.GET, value = "/customer")

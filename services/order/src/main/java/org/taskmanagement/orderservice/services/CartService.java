@@ -17,6 +17,7 @@ import org.taskmanagement.orderservice.repositories.CartItemRepository;
 import org.taskmanagement.orderservice.repositories.CartRepository;
 import org.taskmanagement.orderservice.repositories.ItemRepository;
 
+import java.util.ArrayList;
 import java.util.Optional;
 
 @Service
@@ -38,7 +39,7 @@ public class CartService {
 
     @Transactional
     public Cart addCartItem(CartItemRequest cartItemRequest) {
-        Cart cart = getCartByCustomerId(cartItemRequest);
+        Cart cart = getOrCreateCartForCustomer(cartItemRequest.getCustomerId());
         Item requestItem = getItem(cartItemRequest.getItemId());
         if (isCartItemExist(cartItemRequest, cart)) {
             throw new ItemAlreadyExists("cart item already exists");
@@ -92,6 +93,15 @@ public class CartService {
                 () -> new  CartNotFoundException("no such cart with this customer: " + itemRequest.getCustomerId())
         );
         return cart;
+    }
+    private Cart getOrCreateCartForCustomer(Long customerId) {
+        return cartRepository.getCartByCustomerId(customerId)
+                .orElseGet(() -> {
+                    Cart newCart = new Cart();
+                    newCart.setCustomerId(customerId);
+                    newCart.setCartItems(new ArrayList<>());
+                    return cartRepository.save(newCart);
+                });
     }
 
     private CustomerResponse getCustomer(CartItemRequest cartItemRequest) {
