@@ -18,6 +18,7 @@ public class PaymentResponse {
     private Long customerId;
     private Long orderId;
     private Payment.PaymentStatus status;
-    private BigDecimal amount;
-    private OffsetDateTime creationDate;
+    private Double amount;
+    private Double customerBalance;
+    private OffsetDateTime createdAt;
 }

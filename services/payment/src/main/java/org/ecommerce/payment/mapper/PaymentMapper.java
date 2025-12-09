@@ -14,7 +14,8 @@ public class PaymentMapper {
                 .orderId(payment.getOrderId())
                 .status(payment.getStatus())
                 .amount(payment.getAmount())
-                .creationDate(payment.getCreatedAt())
+                .customerBalance(payment.getCustomerBalance())
+                .createdAt(payment.getCreatedAt())
                 .build();
     }
 

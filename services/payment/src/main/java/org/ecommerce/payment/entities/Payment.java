@@ -8,7 +8,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
-import java.math.BigDecimal;
 import java.time.OffsetDateTime;
 
 @Data
@@ -31,7 +30,8 @@ public class Payment {
     @NotNull(message = "orderId cannot be empty")
     private Long orderId;
 
-    private BigDecimal amount;
+    private Double amount;
+    private Double customerBalance;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
