@@ -1,0 +1,34 @@
+spring:
+  security:
+      oauth2:
+        resourceserver:
+          jwt:
+            public-key-location: classpath:publickey.pem
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: order-service
+              uri: lb://ORDER-SERVICE
+              predicates:
+                - Path=/api/v1/orders/**
+            - id: order-service
+              uri: lb://ORDER-SERVICE
+              predicates:
+                - Path=/api/v1/cart/**
+            - id: payment-service
+              uri: lb://PAYMENT-SERVICE
+              predicates:
+                - Path=/api/v1/payments/**
+            - id: customer-service
+              uri: lb://CUSTOMER-SERVICE
+              predicates:
+                - Path=/api/v1/customer
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+

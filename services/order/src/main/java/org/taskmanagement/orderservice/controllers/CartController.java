@@ -3,6 +3,7 @@ package org.taskmanagement.orderservice.controllers;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.taskmanagement.orderservice.dto.CartItemRequest;
 import org.taskmanagement.orderservice.dto.CartResponse;
@@ -17,6 +18,7 @@ public class CartController {
     private final CartService cartService;
     private final CartMapper cartMapper;
     @GetMapping("/{cartId}")
+    @PreAuthorize("hasAuthority('SCOPE_customer')")
     public ResponseEntity<CartResponse> getCart(@PathVariable Long  cartId) {
         CartResponse cartResponse = cartMapper.toCartResponse(cartService.getCartById(cartId));
         return ResponseEntity.ok(cartResponse);
