@@ -23,7 +23,7 @@ public class OrderController {
     @PostMapping
     public ResponseEntity<OrderResponse> placeOrder(@AuthenticationPrincipal Jwt jwt)
     {
-        OrderResponse responseOrder = orderMapper.toOrderResponse(orderService.placeOrder(jwt.getClaim("userId")));
+        OrderResponse responseOrder = orderMapper.toOrderResponse(orderService.placeOrder(jwt.getClaim("userId"),jwt.getClaim("email")));
         return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
     }
 

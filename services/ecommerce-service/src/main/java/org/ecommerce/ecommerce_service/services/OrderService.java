@@ -2,7 +2,9 @@ package org.ecommerce.ecommerce_service.services;
 
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.ecommerce.ecommerce_service.dto.OrderConfirmation;
 import org.ecommerce.ecommerce_service.dto.PaymentResponse;
+import org.ecommerce.ecommerce_service.kafka.OrderProducer;
 import org.ecommerce.ecommerce_service.models.*;
 import org.ecommerce.ecommerce_service.proxies.PaymentProxy;
 import org.springframework.stereotype.Service;
@@ -31,9 +33,10 @@ public class OrderService {
     private final CartRepository cartRepository;
     private final PaymentProxy paymentProxy;
     private final ItemService itemService;
+    private final OrderProducer orderProducer;
 
     @Transactional
-    public Order placeOrder(Long userId) {
+    public Order placeOrder(Long userId,String email) {
         Cart cart = cartService.getCart(userId);
         Customer customer = customerService.getCustomer(userId);
         if (cart.getCartItems().isEmpty()) {
@@ -52,7 +55,6 @@ public class OrderService {
                 .userId(savedOrder.getUserId())
                 .amount(savedOrder.getAmount())
                 .build();
-        System.out.println(paymentRequest.toString());
 
         PaymentResponse response = paymentProxy.purchase(paymentRequest);
         if(response.status().equals("DENIED")){
@@ -62,6 +64,14 @@ public class OrderService {
             updateStock(savedOrder);
             cartRepository.delete(cart);
         }
+        orderProducer.sendConfirmation(
+                new OrderConfirmation(
+                        order.getId(),
+                        email,
+                        order.getAmount(),
+                        customer
+                )
+        );
         return orderRepository.save(savedOrder);
     }
 
