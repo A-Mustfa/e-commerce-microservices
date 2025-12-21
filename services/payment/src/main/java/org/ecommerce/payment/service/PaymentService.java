@@ -25,12 +25,11 @@ public class PaymentService {
 
     @Transactional(noRollbackFor = InsufficientFundsException.class)
     public Payment purchaseOrder(PaymentRequest paymentRequest) throws IOException {
-        double customerBalance = getCustomerBalance(paymentRequest.getCustomerId());
+        double customerBalance = getCustomerBalance(paymentRequest.getUserId());
         Payment payment = Payment.builder()
-                .customerId(paymentRequest.getCustomerId())
+                .customerId(paymentRequest.getUserId())
                 .orderId(paymentRequest.getOrderId())
                 .amount(paymentRequest.getAmount())
-                .customerBalance(customerBalance)
                 .build();
 
         if(!validateBalance(customerBalance, paymentRequest)){
@@ -59,7 +58,7 @@ public class PaymentService {
         return existingPayments;
     }
 
-    private double getCustomerBalance(Long customerId) throws IOException {
+    private double getCustomerBalance(Long userId) throws IOException {
         InputStream stream = getClass()
                 .getClassLoader()
                 .getResourceAsStream("customers/customer.json");
@@ -67,7 +66,7 @@ public class PaymentService {
         List<CustomerData> customers = objectMapper.readValue(stream, new TypeReference<List<CustomerData>>() {
         });
         double customerBalance = customers.stream()
-                .filter(customer -> customer.getId() == customerId)
+                .filter(customer -> customer.getId() == userId)
                 .map(customer -> customer.getBalance())
                 .findAny().orElseThrow(() -> new EntityNotFoundException());
         return customerBalance;

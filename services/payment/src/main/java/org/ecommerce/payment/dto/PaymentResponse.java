@@ -16,9 +16,5 @@ import java.time.OffsetDateTime;
 public class PaymentResponse {
     private Long paymentId;
     private Long customerId;
-    private Long orderId;
-    private Payment.PaymentStatus status;
-    private Double amount;
-    private Double customerBalance;
-    private OffsetDateTime createdAt;
+    private String status;
 }

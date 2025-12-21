@@ -18,7 +18,7 @@ import java.time.OffsetDateTime;
 public class Payment {
 
     @Id
-@GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "payment_id")
     private Long id;
 
@@ -31,12 +31,9 @@ public class Payment {
     private Long orderId;
 
     private Double amount;
-    private Double customerBalance;
 
     @Enumerated(EnumType.STRING)
     private PaymentStatus status;
-
-    private String comment;
 
     @CreationTimestamp
     @Column(name = "created_at")

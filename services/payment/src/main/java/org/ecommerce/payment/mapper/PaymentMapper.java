@@ -11,17 +11,13 @@ public class PaymentMapper {
         return PaymentResponse.builder()
                 .paymentId(payment.getId())
                 .customerId(payment.getCustomerId())
-                .orderId(payment.getOrderId())
-                .status(payment.getStatus())
-                .amount(payment.getAmount())
-                .customerBalance(payment.getCustomerBalance())
-                .createdAt(payment.getCreatedAt())
+                .status(payment.getStatus().toString())
                 .build();
     }
 
     public Payment toPayment(PaymentRequest paymentRequest) {
         return Payment.builder()
-                .customerId(paymentRequest.getCustomerId())
+                .customerId(paymentRequest.getUserId())
                 .orderId(paymentRequest.getOrderId())
                 .amount(paymentRequest.getAmount())
                 .build();
