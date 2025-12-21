@@ -1,0 +1,14 @@
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\services\UserService.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\proxies\CustomerServiceClient.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\controller\AuthController.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\repositories\UserRepository.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\configuration\Config.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\dto\RegisterRequest.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\services\CustomUserDetailsService.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\services\JwtService.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\entities\User.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\AuthServerApplication.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\dto\RegisterResponse.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\utils\RsaKeys.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\dto\CustomerClientRequest.java
+D:\projects\E-commerce\services\auth-server\src\main\java\org\ecommerce\authserver\mapper\UserMapper.java
