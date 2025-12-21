@@ -12,15 +12,13 @@ import org.ecommerce.ecommerce_service.models.CartItem;
 import org.ecommerce.ecommerce_service.models.Item;
 import org.ecommerce.ecommerce_service.repositories.CartItemRepository;
 import org.ecommerce.ecommerce_service.repositories.CartRepository;
-import org.ecommerce.ecommerce_service.repositories.ItemRepository;
-
 import java.util.ArrayList;
 
 @Service
 @RequiredArgsConstructor
 public class CartService {
+
     private final CartRepository cartRepository;
-    private final ItemRepository itemRepository;
     private final CartItemRepository cartItemRepository;
     private final ItemService itemService;
     private final CartItemService cartItemService;
@@ -48,11 +46,9 @@ public class CartService {
     public Cart removeItemFromCart(Long userId, Long cartItemId) {
         Cart cart = getCart(userId);
         CartItem cartItem = cartItemService.getCartItemById(cartItemId);
-
         if (!cartItem.getCart().equals(cart)) {
             throw new CartItemNotFoundException("Cart item does not belong to this cart");
         }
-
         cart.removeCartItem(cartItem);
         cartItem.setCart(null);
         return cartRepository.save(cart);

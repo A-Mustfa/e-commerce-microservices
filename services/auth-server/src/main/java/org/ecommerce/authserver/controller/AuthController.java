@@ -3,10 +3,10 @@ package org.ecommerce.authserver.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-import org.ecommerce.authserver.dto.RegisterRequest;
-import org.ecommerce.authserver.dto.UserResponse;
+import org.ecommerce.authserver.dto.UserRegisterRequest;
+import org.ecommerce.authserver.dto.UserRegisterResponse;
 import org.ecommerce.authserver.mapper.UserMapper;
-import org.ecommerce.authserver.services.JwtService;
+import org.ecommerce.authserver.configuration.security.JwtService;
 
 import org.ecommerce.authserver.services.UserService;
 import org.springframework.http.HttpStatus;
@@ -27,8 +27,8 @@ public class AuthController {
     private final JwtService jwtService;
 
     @PostMapping("/register")
-    public ResponseEntity<UserResponse> registerUser(@Valid @RequestBody RegisterRequest registerRequest){
-        UserResponse response = mapper.toRegisterResponse(userService.register(registerRequest));
+    public ResponseEntity<UserRegisterResponse> registerUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest){
+        UserRegisterResponse response = mapper.toRegisterResponse(userService.register(userRegisterRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -40,8 +40,8 @@ public class AuthController {
 
     @GetMapping("/users")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<UserResponse>> showAllUsers(){
-        List<UserResponse> response = userService.getAllUsers();
+    public ResponseEntity<List<UserRegisterResponse>> showAllUsers(){
+        List<UserRegisterResponse> response = userService.getAllUsers();
         return ResponseEntity.ok().body(response);
     }
 

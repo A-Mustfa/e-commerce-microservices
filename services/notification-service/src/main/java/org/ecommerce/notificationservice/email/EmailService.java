@@ -22,8 +22,8 @@ import static org.springframework.mail.javamail.MimeMessageHelper.MULTIPART_MODE
 @Service
 @RequiredArgsConstructor
 public class EmailService {
-    private final JavaMailSender mailSender;
 
+    private final JavaMailSender mailSender;
     private final SpringTemplateEngine templateEngine;
 
     @Async
@@ -41,11 +41,9 @@ public class EmailService {
         model.put("CustomerName", CustomerName);
         model.put("amount", amount);
         model.put("OrderId", OrderId);
-
         Context context = new Context();
         context.setVariables(model);
         helper.setSubject(EmailTemplate.ORDER_CONFIRMATION.getSubject());
-
         try{
             String htmlText = templateEngine.process(templateName, context);
             helper.setText(htmlText, true);
@@ -55,6 +53,6 @@ public class EmailService {
         }catch(MessagingException e){
             log.warn(String.format("Error sending email to %s", destinationEmail));
         }
-
     }
+
 }

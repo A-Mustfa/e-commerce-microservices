@@ -14,10 +14,8 @@ import org.ecommerce.ecommerce_service.exceptions.InsufficientStockException;
 import org.ecommerce.ecommerce_service.repositories.CartRepository;
 import org.ecommerce.ecommerce_service.repositories.ItemRepository;
 import org.ecommerce.ecommerce_service.repositories.OrderRepository;
-
 import java.util.List;
 import java.util.Optional;
-
 import static org.ecommerce.ecommerce_service.models.Order.OrderStatus.CANCELLED;
 import static org.ecommerce.ecommerce_service.models.Order.OrderStatus.CONFIRMED;
 
@@ -42,20 +40,15 @@ public class OrderService {
         if (cart.getCartItems().isEmpty()) {
             throw new IllegalStateException("Cannot place order with empty cart");
         }
-
         checkForPendingOrders(userId);
-
         Order order = Order.createOrderFromCart(cart, customer);
         order.setOrderItems(OrderItem.createOrderItems(order, cart));
-
         Order savedOrder = orderRepository.save(order);
-
         PaymentRequest paymentRequest = PaymentRequest.builder()
                 .orderId(savedOrder.getId())
                 .userId(savedOrder.getUserId())
                 .amount(savedOrder.getAmount())
                 .build();
-
         PaymentResponse response = paymentProxy.purchase(paymentRequest);
         if(response.status().equals("DENIED")){
             savedOrder.setOrderStatus(CANCELLED);
@@ -81,7 +74,6 @@ public class OrderService {
         order.cancel();
         restoreStock(order);
         Order cancelledOrder = orderRepository.save(order);
-        // TODO: Send cancellation notification
         return cancelledOrder;
     }
 
@@ -96,7 +88,8 @@ public class OrderService {
         itemRepository.saveAll(updatedItems);
     }
 
-    private void decreaseItemStock(Item item, Integer quantityChange) {
+    @Transactional
+    public void decreaseItemStock(Item item, Integer quantityChange) {
         double newStock = item.getStock() - quantityChange;
         if (newStock < 0) {
             throw new InsufficientStockException(
@@ -108,7 +101,8 @@ public class OrderService {
         item.setStock(newStock);
     }
 
-    private void restoreStock(Order order) {
+    @Transactional
+    public void restoreStock(Order order) {
         List<Item> updatedItems = order.getOrderItems().stream()
                 .map(orderItem -> {
                     Item item = itemService.getItem(orderItem.getItemId());
@@ -137,4 +131,5 @@ public class OrderService {
             );
         }
     }
+
 }

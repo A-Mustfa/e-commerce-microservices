@@ -1,6 +1,6 @@
 package org.ecommerce.authserver;
 
-import org.ecommerce.authserver.utils.RsaKeys;
+import org.ecommerce.authserver.configuration.security.RsaKeys;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

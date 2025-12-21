@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 @Slf4j
 public class NotificationConsumer {
+
     private final NotificationRepository notificationRepository;
     private final EmailService emailService;
 
@@ -32,12 +33,11 @@ public class NotificationConsumer {
                         .build()
         );
         var customerName = orderConfirmation.customer().getName();
-
         emailService.sendOrderEmail(orderConfirmation.customerEmail(),
                 customerName,
                 orderConfirmation.totalAmount(),
                 orderConfirmation.orderId()
         );
-
     }
+
 }

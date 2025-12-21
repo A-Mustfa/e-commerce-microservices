@@ -9,6 +9,8 @@ import java.util.Optional;
 
 @Repository
 public interface ItemRepository extends CrudRepository<Item,Long> {
+
     Optional<Item> findByName(String name);
     List<Item> findAll();
+
 }

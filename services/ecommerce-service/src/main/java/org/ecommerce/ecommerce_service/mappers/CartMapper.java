@@ -16,7 +16,6 @@ public class CartMapper {
         if (cart == null) {
             return null;
         }
-
         return CartResponse.builder()
                 .cartId(cart.getCartId())
                 .userId(cart.getUserId())
@@ -31,7 +30,6 @@ public class CartMapper {
         if (cartItems == null) {
             return List.of();
         }
-
         return cartItems.stream()
                 .map(this::toCartItemResponse)
                 .collect(Collectors.toList());

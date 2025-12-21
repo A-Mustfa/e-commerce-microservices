@@ -11,6 +11,7 @@ import java.util.Optional;
 
 @Repository
 public interface CartItemRepository extends CrudRepository<CartItem,Long> {
+
     Optional<CartItem> findByCart_CartIdAndItem_Id(Long cartId, Long itemId);
 
     @Modifying

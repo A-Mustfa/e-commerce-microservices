@@ -6,6 +6,7 @@ import org.mapstruct.Mapper;
 
 @Mapper(componentModel="spring")
 public interface ItemMapper {
+
     Item toItem(ItemRequest itemRequest);
     ItemResponse toItemResponse(Item item);
 }

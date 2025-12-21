@@ -13,6 +13,7 @@ import java.util.Optional;
 @Service
 @RequiredArgsConstructor
 public class CartItemService {
+
     private final CartItemRepository cartItemRepository;
 
     public CartItem getCartItemById(Long cartItemId) {
@@ -21,6 +22,7 @@ public class CartItemService {
                         () -> new CartItemNotFoundException("no cart item with id: " + cartItemId)
                 );
     }
+
     public boolean isCartItemExist(CartItemRequest cartItemRequest, Cart cart) {
         Optional<CartItem> cartItem = cartItemRepository.findByCart_CartIdAndItem_Id(cart.getCartId(), cartItemRequest.getItemId());
         return cartItem.isPresent();

@@ -23,7 +23,6 @@ public class ItemController {
     @PostMapping("/add")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ItemResponse> addNewItem(@Valid @RequestBody ItemRequest itemRequest){
-
         ItemResponse itemResponse = itemMapper.toItemResponse(itemService.createItem(itemRequest));
         return ResponseEntity.status(HttpStatus.CREATED).body(itemResponse);
     }

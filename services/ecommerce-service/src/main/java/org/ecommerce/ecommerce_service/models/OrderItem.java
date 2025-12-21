@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 @Data
 @Table(name = "order_item")
 public class OrderItem {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_item_id")
@@ -33,7 +34,6 @@ public class OrderItem {
     private BigDecimal unitPrice;
 
     private BigDecimal totalPrice;
-
 
     public static List<OrderItem> createOrderItems(Order order, Cart cart) {
         return cart.getCartItems().stream()

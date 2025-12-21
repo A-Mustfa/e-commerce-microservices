@@ -6,11 +6,13 @@ import org.ecommerce.ecommerce_service.models.Customer;
 
 @Service
 public class CustomerMapper {
+
     public Customer toCustomer(Long userId){
         return Customer.builder()
                 .userId(userId)
                 .build();
     }
+
     public CustomerResponse toCustomerResponse(Customer customer){
         return CustomerResponse.builder()
                 .userId(customer.getUserId())

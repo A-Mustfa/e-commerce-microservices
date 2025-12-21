@@ -46,7 +46,6 @@ public class Order {
     @OneToMany(fetch = FetchType.LAZY,orphanRemoval = true,cascade = CascadeType.ALL, mappedBy = "order")
     private List<OrderItem> orderItems;
 
-
     public static Order createOrderFromCart(Cart orderCart, Customer customer) {
         Order order = new Order();
         order.setUserId(customer.getUserId());
@@ -67,6 +66,7 @@ public class Order {
     }
 
     public enum OrderStatus {
+
         PENDING(1L, "Pending",true),
         CONFIRMED(2L, "Confirmed", false),
         OUT_FOR_DELIVERY(5L, "Out for Delivery", false),
@@ -74,11 +74,8 @@ public class Order {
         CANCELLED(7L, "Cancelled", false);
 
         private final Long statusId;
-
         private final String statusName;
-
         private final boolean cancellable;
-
 
         OrderStatus(Long statusId, String statusName, boolean cancellable) {
             this.statusId = statusId;
@@ -99,5 +96,4 @@ public class Order {
         }
 
     }
-
 }

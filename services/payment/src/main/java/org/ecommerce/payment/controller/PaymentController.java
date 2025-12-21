@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.ecommerce.payment.dto.PaymentRequest;
 import org.ecommerce.payment.dto.PaymentResponse;
-import org.ecommerce.payment.entities.Payment;
 import org.ecommerce.payment.mapper.PaymentMapStruct;
 import org.ecommerce.payment.mapper.PaymentMapper;
 import org.ecommerce.payment.service.PaymentService;

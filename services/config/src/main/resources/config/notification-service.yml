@@ -8,11 +8,12 @@ spring:
       group-id: orderGroup
       auto-offset-reset: earliest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.ErrorHandlingDeserializer
       properties:
-        spring.json.trusted.packages: '*'
-        spring.json.value.default.type: orderConfirmation:org.ecommerce.notificationservice.kafka.order.OrderConfirmation
-
+        spring.deserializer.value.delegate.class: org.springframework.kafka.support.serializer.JsonDeserializer
+        spring.json.trusted.packages: 'org.ecommerce.notificationservice.kafka.order'
+        spring.json.value.default.type: org.ecommerce.notificationservice.kafka.order.OrderConfirmation
+        spring.json.type.mapping: orderConfirmation:org.ecommerce.notificationservice.kafka.order.OrderConfirmation
   mail:
     host: localhost
     port: 1025
@@ -42,6 +43,14 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.SQLServerDialect
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+  instance:
+    prefer-ip-address: true
+    hostname: localhost
+    ip-address: 127.0.0.1
 
 server:
   port: 8007

@@ -14,32 +14,33 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class UserService {
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CustomerServiceClient customerServiceClient;
 
     @Transactional
-    public User register(RegisterRequest registerRequest) {
+    public User register(UserRegisterRequest userRegisterRequest) {
         User newUser  = User.builder()
-                .email(registerRequest.email())
-                .password(passwordEncoder.encode(registerRequest.password()))
-                .role(registerRequest.role())
+                .email(userRegisterRequest.email())
+                .password(passwordEncoder.encode(userRegisterRequest.password()))
+                .role(userRegisterRequest.role())
                 .build();
         User savedUser = userRepository.save(newUser);
         customerServiceClient.createCustomer(savedUser.getId());
         return savedUser;
     }
 
-    public List<UserResponse> getAllUsers() {
+    public List<UserRegisterResponse> getAllUsers() {
         List<UserProjection> users = userRepository.findAllBy();
-        List<UserResponse> userResponses = users.stream()
-                .map(user -> new UserResponse(
+        List<UserRegisterResponse> userRegisterRespons = users.stream()
+                .map(user -> new UserRegisterResponse(
                         user.getId(),
                         user.getEmail(),
                         user.getRole()
                 ))
                 .toList();
-        return userResponses;
+        return userRegisterRespons;
     }
 
     public void suspend(Long userId) {

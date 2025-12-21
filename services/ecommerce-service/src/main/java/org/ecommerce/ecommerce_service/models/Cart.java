@@ -41,10 +41,10 @@ public class Cart {
                 .sum();
     }
 
-
     public void removeCartItem(CartItem cartItem) {
         cartItems.remove(cartItem);
     }
+
     public void addCartItem(CartItem item) {
         cartItems.add(item);
         item.setCart(this);

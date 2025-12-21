@@ -15,16 +15,21 @@ import lombok.NoArgsConstructor;
 @Builder
 @Table(name = "USERS")
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @NotNull
     private String email;
+
     @NotNull
     private String password;
+
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private Status status=Status.ACTIVE;
+
     @Builder.Default
     @Enumerated(EnumType.STRING)
     private Role role = Role.CUSTOMER;

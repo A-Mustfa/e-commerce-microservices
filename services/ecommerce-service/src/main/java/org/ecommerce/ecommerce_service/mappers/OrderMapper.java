@@ -16,7 +16,6 @@ public class OrderMapper {
         if (order == null) {
             return null;
         }
-
         return OrderResponse.builder()
                 .id(order.getId())
                 .userId(order.getUserId())
@@ -32,7 +31,6 @@ public class OrderMapper {
         if (orderItems == null) {
             return List.of();
         }
-
         return orderItems.stream()
                 .map(this::toOrderItemResponse)
                 .toList();
@@ -41,7 +39,6 @@ public class OrderMapper {
     private OrderItemResponse toOrderItemResponse(OrderItem orderItem) {
         BigDecimal unitPrice = orderItem.getTotalPrice()
                 .divide(BigDecimal.valueOf(orderItem.getQuantity()), 2, java.math.RoundingMode.HALF_UP);
-
         return OrderItemResponse.builder()
                 .id(orderItem.getId())
                 .itemId(orderItem.getItemId())

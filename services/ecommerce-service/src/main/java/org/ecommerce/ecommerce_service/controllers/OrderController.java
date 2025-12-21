@@ -21,15 +21,13 @@ public class OrderController {
     private final OrderMapper orderMapper;
 
     @PostMapping
-    public ResponseEntity<OrderResponse> placeOrder(@AuthenticationPrincipal Jwt jwt)
-    {
+    public ResponseEntity<OrderResponse> placeOrder(@AuthenticationPrincipal Jwt jwt) {
         OrderResponse responseOrder = orderMapper.toOrderResponse(orderService.placeOrder(jwt.getClaim("userId"),jwt.getClaim("email")));
         return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
     }
 
     @DeleteMapping("/{orderId}")
-    public ResponseEntity<OrderResponse> cancelOrder(@PathVariable Long orderId)
-    {
+    public ResponseEntity<OrderResponse> cancelOrder(@PathVariable Long orderId) {
         OrderResponse response =  orderMapper.toOrderResponse(orderService.cancelOrder(orderId));
         return ResponseEntity.ok().body(response);
     }
@@ -49,5 +47,4 @@ public class OrderController {
                 .toList();
         return ResponseEntity.ok().body(orders);
     }
-
 }

@@ -16,24 +16,29 @@ import org.ecommerce.ecommerce_service.services.CartService;
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/cart")
 public class CartController {
+
     private final CartService cartService;
     private final CartMapper cartMapper;
+
     @GetMapping("/my-cart")
     public ResponseEntity<CartResponse> getCart(@AuthenticationPrincipal Jwt jwt) {
         CartResponse cartResponse = cartMapper.toCartResponse(cartService.getCart(jwt.getClaim("userId")));
         return ResponseEntity.ok().body(cartResponse);
     }
-    @DeleteMapping("/my-cart")// auth that cart belongs to this logged in user
+
+    @DeleteMapping("/my-cart")
     public ResponseEntity<CartResponse> clearCart(@AuthenticationPrincipal Jwt jwt) {
         Cart clearedCart = cartService.clearCart(jwt.getClaim("userId"));
         CartResponse cartResponse = cartMapper.toCartResponse(clearedCart);
         return ResponseEntity.ok().body(cartResponse);
     }
+
     @PostMapping("/item")
     public ResponseEntity<CartResponse> addItemToCart(@Valid @RequestBody CartItemRequest cartItemRequest, @AuthenticationPrincipal Jwt jwt) {
         CartResponse cartResponse = cartMapper.toCartResponse(cartService.addCartItem(cartItemRequest,jwt.getClaim("userId")));
         return ResponseEntity.ok().body(cartResponse);
     }
+
     @DeleteMapping("/item/{itemId}")
     public ResponseEntity<CartResponse> removeItemFromCart(@AuthenticationPrincipal Jwt jwt,@PathVariable Long  itemId) {
         CartResponse cartResponse = cartMapper.toCartResponse(cartService.removeItemFromCart(jwt.getClaim("userId"),itemId));
