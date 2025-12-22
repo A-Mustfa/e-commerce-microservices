@@ -15,4 +15,5 @@ public interface UserRepository extends CrudRepository<User,Long> {
     List<UserProjection> findAllBy();
     User save(User user);
 
+    boolean existsByEmail(String email);
 }

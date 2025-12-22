@@ -2,6 +2,7 @@ package org.ecommerce.authserver.services;
 import lombok.RequiredArgsConstructor;
 import org.ecommerce.authserver.dto.*;
 import org.ecommerce.authserver.entities.User;
+import org.ecommerce.authserver.exceptions.UserAlreadyExists;
 import org.ecommerce.authserver.exceptions.UserNotFoundException;
 import org.ecommerce.authserver.proxies.CustomerServiceClient;
 import org.ecommerce.authserver.repositories.UserRepository;
@@ -21,6 +22,9 @@ public class UserService {
 
     @Transactional
     public User register(UserRegisterRequest userRegisterRequest) {
+        if(isUserExist(userRegisterRequest.email())){
+            throw new UserAlreadyExists("this email registered already: " + userRegisterRequest.email() );
+        }
         User newUser  = User.builder()
                 .email(userRegisterRequest.email())
                 .password(passwordEncoder.encode(userRegisterRequest.password()))
@@ -53,6 +57,10 @@ public class UserService {
         return userRepository.findById(userId).orElseThrow(
                 () -> new UserNotFoundException("no user with id: " + userId)
         );
+    }
+
+    public boolean isUserExist(String email) {
+        return userRepository.existsByEmail(email);
     }
 }
 
