@@ -14,22 +14,6 @@ spring:
         spring.json.trusted.packages: 'org.ecommerce.notificationservice.kafka.order'
         spring.json.value.default.type: org.ecommerce.notificationservice.kafka.order.OrderConfirmation
         spring.json.type.mapping: orderConfirmation:org.ecommerce.notificationservice.kafka.order.OrderConfirmation
-  mail:
-    host: localhost
-    port: 1025
-    username: ahmed
-    password: ahmed
-    properties:
-      mail:
-        smtp:
-          auth: true
-          starttls:
-            enabled: true
-          trust: '*'
-          connectiontimeout: 5000
-          timeout: 3000
-          writetimeout: 5000
-
   datasource:
     url: jdbc:sqlserver://localhost:1433;databaseName=notification_service;encrypt=true;trustServerCertificate=true
     username: sa
