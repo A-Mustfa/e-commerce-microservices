@@ -43,13 +43,18 @@ public class ExceptionHandling {
         return handle(HttpStatus.INTERNAL_SERVER_ERROR, request, ex);
     }
 
+    @ExceptionHandler(UserAlreadyExists.class)
+    public ResponseEntity<ErrorResponse> handleUserAlreadyExists(UserAlreadyExists ex, HttpServletRequest request) {
+        return handle(HttpStatus.CONFLICT, request, ex);
+    }
+
     public ResponseEntity<ErrorResponse> handle(HttpStatus status, HttpServletRequest request, Exception ex, Map<String, String> errors) {
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
                 status.value(),
                 errors != null && !errors.isEmpty() ? "Validation failed" : status.getReasonPhrase(),
-                ex.getMessage(),
-                request.getPathInfo(),
+                errors == null && errors.isEmpty() ? ex.getMessage() : null ,
+                request.getRequestURI(),
                 errors
         );
         return ResponseEntity

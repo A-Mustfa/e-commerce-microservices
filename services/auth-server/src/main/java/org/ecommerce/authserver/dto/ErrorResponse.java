@@ -15,6 +15,7 @@ public class ErrorResponse {
     private LocalDateTime timestamp;
     private int code;
     private String error;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String message;
     @JsonInclude(JsonInclude.Include.NON_NULL)
     private String path;
