@@ -6,6 +6,9 @@ import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
+import java.util.Map;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -14,5 +17,9 @@ public class ErrorResponse {
     private int code;
     private String error;
     private String message;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private String path;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
+    private Map<String, String> errors;
+
 }

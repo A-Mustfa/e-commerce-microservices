@@ -9,15 +9,15 @@ spring:
             - id: ecommerce-service
               uri: lb://ECOMMERCE-SERVICE
               predicates:
-                - Path=/api/v1/cart/**,/api/v1/customer/**,/api/v1/orders/**,/api/v1/item/**
+                - Path=${api.prefix}/cart/**,${api.prefix}/customer/**,${api.prefix}/orders/**,${api.prefix}/item/**
             - id: payment-service
               uri: lb://PAYMENT-SERVICE
               predicates:
-                - Path=/api/v1/payments/**
+                - Path=${api.prefix}/payments/**
             - id: auth-server
               uri: lb://AUTH-SERVER
               predicates:
-                - Path=/api/v1/auth/**
+                - Path=${api.prefix}/auth/**
 eureka:
   client:
     service-url:
@@ -26,4 +26,7 @@ eureka:
     prefer-ip-address: true
     hostname: localhost
     ip-address: 127.0.0.1
+
+api:
+  prefix: /api/v1
 

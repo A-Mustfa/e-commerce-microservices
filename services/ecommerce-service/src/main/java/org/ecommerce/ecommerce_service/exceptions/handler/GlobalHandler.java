@@ -24,7 +24,7 @@ public class GlobalHandler {
     }
 
     @ExceptionHandler(ItemNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleItemNotFoundException(CustomerNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleItemNotFoundException(ItemNotFoundException ex, HttpServletRequest request) {
         return handle(HttpStatus.NOT_FOUND, request, ex);
     }
 
@@ -34,7 +34,7 @@ public class GlobalHandler {
     }
 
     @ExceptionHandler(CartNotFoundException.class)
-    public ResponseEntity<ErrorResponse> handleCartNotFoundException(CartItemNotFoundException ex, HttpServletRequest request) {
+    public ResponseEntity<ErrorResponse> handleCartNotFoundException(CartNotFoundException ex, HttpServletRequest request) {
         return handle(HttpStatus.NOT_FOUND, request, ex);
     }
 
@@ -63,6 +63,11 @@ public class GlobalHandler {
                             errors.put( ((FieldError) error).getField(),error.getDefaultMessage());
                         });
         return handle(HttpStatus.BAD_REQUEST, request, ex, errors);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, HttpServletRequest request) {
+        return handle(HttpStatus.INTERNAL_SERVER_ERROR, request, ex);
     }
 
     public ResponseEntity<ErrorResponse> handle(HttpStatus status, HttpServletRequest request, Exception ex, Map<String, String> errors) {

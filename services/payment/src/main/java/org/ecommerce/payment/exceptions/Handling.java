@@ -2,7 +2,6 @@ package org.ecommerce.payment.exceptions;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.ecommerce.payment.dto.ErrorResponse;
-import org.ecommerce.payment.dto.ValidationErrorResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
@@ -17,37 +16,44 @@ import java.util.Map;
 @Component
 @RestControllerAdvice
 public class Handling {
+
     @ExceptionHandler(InsufficientFundsException.class)
     public ResponseEntity<ErrorResponse> handleFundsException(InsufficientFundsException ex, HttpServletRequest request) {
-        ErrorResponse errorResponse = new ErrorResponse(
-                LocalDateTime.now(),
-                HttpStatus.CONFLICT.value(),
-                HttpStatus.CONFLICT.getReasonPhrase(),
-                ex.getMessage(),
-                request.getPathInfo()
-        );
-        return ResponseEntity
-                .status(HttpStatus.CONFLICT)
-                .body(errorResponse);
+        return handle(HttpStatus.CONFLICT, request, ex);
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, HttpServletRequest request) {
+        return handle(HttpStatus.INTERNAL_SERVER_ERROR, request, ex);
     }
 
     @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ValidationErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex){
+    public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException ex, HttpServletRequest request) {
         Map<String, String> errors = new HashMap<>();
-
         ex.getBindingResult()
                 .getAllErrors()
                 .forEach(
                         (error) -> {
                             errors.put( ((FieldError) error).getField(),error.getDefaultMessage());
                         });
-        ValidationErrorResponse errorResponse = new ValidationErrorResponse(LocalDateTime.now(),
-                HttpStatus.BAD_REQUEST.value(),
-                "Validation Failed",
-                errors);
+        return handle(HttpStatus.BAD_REQUEST, request, ex, errors);
+    }
 
+    public ResponseEntity<ErrorResponse> handle(HttpStatus status, HttpServletRequest request, Exception ex, Map<String, String> errors) {
+        ErrorResponse errorResponse = new ErrorResponse(
+                LocalDateTime.now(),
+                status.value(),
+                errors != null && !errors.isEmpty() ? "Validation failed" : status.getReasonPhrase(),
+                ex.getMessage(),
+                request.getPathInfo(),
+                errors
+        );
         return ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(status)
                 .body(errorResponse);
+    }
+
+    public ResponseEntity<ErrorResponse> handle(HttpStatus status, HttpServletRequest request, Exception ex) {
+        return handle(status, request, ex, null);
     }
 }

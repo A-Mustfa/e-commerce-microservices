@@ -38,6 +38,11 @@ public class ExceptionHandling {
         return handle(HttpStatus.BAD_REQUEST, request, ex, errors);
     }
 
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleAllExceptions(Exception ex, HttpServletRequest request) {
+        return handle(HttpStatus.INTERNAL_SERVER_ERROR, request, ex);
+    }
+
     public ResponseEntity<ErrorResponse> handle(HttpStatus status, HttpServletRequest request, Exception ex, Map<String, String> errors) {
         ErrorResponse errorResponse = new ErrorResponse(
                 LocalDateTime.now(),
