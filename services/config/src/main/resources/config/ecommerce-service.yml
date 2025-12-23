@@ -24,8 +24,13 @@ spring:
       hibernate:
         dialect: org.hibernate.dialect.SQLServerDialect
 
-  session:
-    store-type: redis
+  kafka:
+    producer:
+      bootstrap-servers: localhost:9092
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+      properties:
+        spring.json.type.mapping: orderConfirmation:org.ecommerce.ecommerce_service.dto.OrderConfirmation
 
 server:
   port: 8001
@@ -39,3 +44,19 @@ eureka:
     ip-address: 127.0.0.1
     hostname: localhost
     instance-id: ${spring.application.name}:${server.port}
+
+---
+spring:
+  config:
+    activate:
+      on-profile: inst1
+server:
+  port: 8090
+
+---
+spring:
+  config:
+    activate:
+      on-profile: inst2
+server:
+  port: 8091
