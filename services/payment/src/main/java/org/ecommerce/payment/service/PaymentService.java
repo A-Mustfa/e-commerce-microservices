@@ -35,9 +35,7 @@ public class PaymentService {
         if(!validateBalance(customerBalance, paymentRequest)){
             payment.setStatus(Payment.PaymentStatus.DENIED);
             paymentRepo.save(payment);
-            throw new InsufficientFundsException("Sorry boor man 🥲!! the order amount is: "
-                    + paymentRequest.getAmount()
-                    +", you only have: " + customerBalance + " 😂");
+            throw new InsufficientFundsException("Sorry! you don't have enough money");
         }
         payment.setStatus(Payment.PaymentStatus.PAYED);
         return paymentRepo.save(payment);

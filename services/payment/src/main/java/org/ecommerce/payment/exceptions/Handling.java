@@ -44,8 +44,8 @@ public class Handling {
                 LocalDateTime.now(),
                 status.value(),
                 errors != null && !errors.isEmpty() ? "Validation failed" : status.getReasonPhrase(),
-                ex.getMessage(),
-                request.getPathInfo(),
+                errors == null && errors.isEmpty() ? ex.getMessage() : null ,
+                request.getRequestURI(),
                 errors
         );
         return ResponseEntity

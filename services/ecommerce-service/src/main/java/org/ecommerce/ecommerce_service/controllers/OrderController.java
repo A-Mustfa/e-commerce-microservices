@@ -40,9 +40,9 @@ public class OrderController {
         return ResponseEntity.ok().body(response);
     }
 
-    @GetMapping("/customer/{customerId}")
-    public ResponseEntity<List<OrderResponse>> getUserOrders(@PathVariable Long userId) {
-        List<OrderResponse> orders = orderService.getUserOrders(userId).stream()
+    @GetMapping("/all")
+    public ResponseEntity<List<OrderResponse>> getUserOrders(@AuthenticationPrincipal Jwt jwt) {
+        List<OrderResponse> orders = orderService.getUserOrders(jwt.getClaim("userId")).stream()
                 .map(orderMapper::toOrderResponse)
                 .toList();
         return ResponseEntity.ok().body(orders);

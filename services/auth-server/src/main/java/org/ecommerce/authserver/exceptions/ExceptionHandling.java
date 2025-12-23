@@ -1,5 +1,4 @@
 package org.ecommerce.authserver.exceptions;
-
 import jakarta.servlet.http.HttpServletRequest;
 import org.ecommerce.authserver.dto.ErrorResponse;
 import org.springframework.http.HttpStatus;
