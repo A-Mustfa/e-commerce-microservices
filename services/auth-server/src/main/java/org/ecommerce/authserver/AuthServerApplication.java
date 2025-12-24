@@ -14,7 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication
+@SpringBootApplication(scanBasePackages = {"org.ecommerce.authserver","commons.utils"})
 @EnableConfigurationProperties(RsaKeys.class)
 @EnableFeignClients
 @OpenAPIDefinition(
