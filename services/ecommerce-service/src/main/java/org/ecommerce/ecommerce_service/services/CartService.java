@@ -1,12 +1,14 @@
 package org.ecommerce.ecommerce_service.services;
 
+
+import commons.utils.Exceptions.ItemAlreadyExists;
+import commons.utils.Exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.ecommerce.ecommerce_service.dto.cart.CartResponse;
+import org.ecommerce.ecommerce_service.mappers.CartMapper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.ecommerce.ecommerce_service.dto.cartItem.CartItemRequest;
-import org.ecommerce.ecommerce_service.exceptions.CartItemNotFoundException;
-import org.ecommerce.ecommerce_service.exceptions.CartNotFoundException;
-import org.ecommerce.ecommerce_service.exceptions.ItemAlreadyExists;
 import org.ecommerce.ecommerce_service.models.Cart;
 import org.ecommerce.ecommerce_service.models.CartItem;
 import org.ecommerce.ecommerce_service.models.Item;
@@ -21,10 +23,11 @@ public class CartService {
     private final CartRepository cartRepository;
     private final CartItemRepository cartItemRepository;
     private final ItemService itemService;
+    private final CartMapper cartMapper;
     private final CartItemService cartItemService;
 
     @Transactional
-    public Cart addCartItem(CartItemRequest cartItemRequest, Long userId) {
+    public CartResponse addCartItem(CartItemRequest cartItemRequest, Long userId) {
         Cart cart = getOrCreateCartForUser(userId);
         Item requestItem = itemService.getItem(cartItemRequest.getItemId());
         if (cartItemService.isCartItemExist(cartItemRequest, cart)) {
@@ -32,26 +35,34 @@ public class CartService {
         }
         CartItem newCartItem = CartItem.buildCartItem(cart, requestItem, cartItemRequest.getQuantity());
         cart.getCartItems().add(newCartItem);
-        return cartRepository.save(cart);
+        cartRepository.save(cart);
+        return cartMapper.toCartResponse(cart);
     }
 
     @Transactional
-    public Cart clearCart(Long authId){
+    public CartResponse clearCart(Long authId){
         Cart cart = getCart(authId);
         cartItemRepository.deleteByCartId(cart.getCartId());
-        return cartRepository.save(cart);
+        cartRepository.save(cart);
+        return cartMapper.toCartResponse(cart);
     }
 
     @Transactional
-    public Cart removeItemFromCart(Long userId, Long cartItemId) {
+    public CartResponse removeItemFromCart(Long userId, Long cartItemId) {
         Cart cart = getCart(userId);
         CartItem cartItem = cartItemService.getCartItemById(cartItemId);
         if (!cartItem.getCart().equals(cart)) {
-            throw new CartItemNotFoundException("Cart item does not belong to this cart");
+            throw new ResourceNotFoundException("Cart item does not belong to this cart");
         }
         cart.removeCartItem(cartItem);
         cartItem.setCart(null);
-        return cartRepository.save(cart);
+        cartRepository.save(cart);
+        return cartMapper.toCartResponse(cart);
+    }
+
+    public CartResponse getCartByUserId(Long userId) {
+        Cart cart = getCart(userId);
+        return cartMapper.toCartResponse(cart);
     }
 
     private Cart getOrCreateCartForUser(Long userId) {
@@ -66,9 +77,10 @@ public class CartService {
 
     public Cart getCart(Long userId) {
         Cart cart = cartRepository.getCartByUserId(userId).orElseThrow(
-                () -> new  CartNotFoundException("no cart associated with this customer: " + userId)
+                () -> new ResourceNotFoundException("no cart associated with this customer: " + userId)
         );
         return cart;
     }
+
 
 }

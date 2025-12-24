@@ -1,6 +1,6 @@
 //package org.ecommerce.ecommerce_service.config;
 //
-//import org.ecommerce.ecommerce_service.dto.ItemResponse;
+//import org.ecommerce.ecommerce_service.dto.item.ItemResponse;
 //import org.ecommerce.ecommerce_service.models.Item;
 //import org.springframework.cache.annotation.EnableCaching;
 //import org.springframework.context.annotation.Bean;

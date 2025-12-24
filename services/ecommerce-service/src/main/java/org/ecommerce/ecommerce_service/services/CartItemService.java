@@ -1,8 +1,8 @@
 package org.ecommerce.ecommerce_service.services;
 
+import commons.utils.Exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.ecommerce.ecommerce_service.dto.cartItem.CartItemRequest;
-import org.ecommerce.ecommerce_service.exceptions.CartItemNotFoundException;
 import org.ecommerce.ecommerce_service.models.Cart;
 import org.ecommerce.ecommerce_service.models.CartItem;
 import org.ecommerce.ecommerce_service.repositories.CartItemRepository;
@@ -19,7 +19,7 @@ public class CartItemService {
     public CartItem getCartItemById(Long cartItemId) {
         return cartItemRepository.findById(cartItemId)
                 .orElseThrow(
-                        () -> new CartItemNotFoundException("no cart item with id: " + cartItemId)
+                        () -> new ResourceNotFoundException("no cart item with id: " + cartItemId)
                 );
     }
 

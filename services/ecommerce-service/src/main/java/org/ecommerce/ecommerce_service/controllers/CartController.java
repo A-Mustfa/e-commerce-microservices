@@ -32,7 +32,8 @@ public interface CartController {
                                     examples = @ExampleObject(
                                             name = "Success Response",
                                             value = """
-                                                "cartId": 13,
+                                                {
+                                                    "cartId": 13,
                                                     "userId": 11,
                                                     "createdAt": "2025-12-23T13:06:03.990057+02:00",
                                                     "items": [
@@ -47,6 +48,7 @@ public interface CartController {
                                                     ],
                                                     "totalPrice": 7999.00,
                                                     "totalQuantity": 2
+                                                }
                                             """
                                     )
                             )

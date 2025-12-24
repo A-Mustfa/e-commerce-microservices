@@ -8,15 +8,14 @@ import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 
-@SpringBootApplication(scanBasePackages = "org.ecommerce.ecommerce_service")
+@SpringBootApplication(scanBasePackages = {"org.ecommerce.ecommerce_service","commons.utils"})
 @EnableFeignClients(basePackages = "org.ecommerce.ecommerce_service.proxies")
-@EnableCaching
 @OpenAPIDefinition(
         info = @Info(title = "E-Commerce Server", version = "1.0"),
         tags = {@Tag(name = "Cart"),
+                @Tag(name = "Customer"),
                 @Tag(name = "Order"),
                 @Tag(name = "Item")
         },

@@ -1,4 +1,4 @@
-package org.ecommerce.ecommerce_service.dto;
+package org.ecommerce.ecommerce_service.dto.item;
 
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;

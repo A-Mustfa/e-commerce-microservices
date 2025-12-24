@@ -1,16 +1,17 @@
 package org.ecommerce.ecommerce_service.services;
 
+import commons.utils.Exceptions.ResourceNotFoundException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.ecommerce.ecommerce_service.dto.customerdto.CustomerResponse;
 import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.stereotype.Service;
 import org.ecommerce.ecommerce_service.dto.customerdto.CustomerRequest;
-import org.ecommerce.ecommerce_service.exceptions.CustomerNotFoundException;
 import org.ecommerce.ecommerce_service.mappers.CustomerMapper;
 import org.ecommerce.ecommerce_service.models.Customer;
 import org.ecommerce.ecommerce_service.repositories.CustomerRepository;
-
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -26,18 +27,19 @@ public class CustomerService {
     public Customer getCustomer(Long userId) {
         Customer customer = customerRepository.findByUserId(userId)
                 .orElseThrow(
-                        () -> {throw new CustomerNotFoundException("please validate 'id'");}
+                        () -> {throw new ResourceNotFoundException("please validate 'id'");}
                 );
         return customer;
     }
 
-    public Customer getProfile(Long userId){
+    public CustomerResponse getProfile(Long userId){
         Customer customer = getCustomer(userId);
-        return customer;
+        return mapper.toCustomerResponse(customer);
     }
 
-    public List<Customer> getAllCustomers() {
-        List<Customer> customers = customerRepository.findAll();
+    public List<CustomerResponse> getAllCustomers() {
+        List<CustomerResponse> customers = customerRepository.findAll().stream().map(mapper::toCustomerResponse)
+                .collect(Collectors.toList());;
         return customers;
     }
 
@@ -46,13 +48,14 @@ public class CustomerService {
         customerRepository.delete(customerToDelete);
     }
 
-    public Customer updateCustomer(@Valid CustomerRequest request, Jwt jwt) {
+    public CustomerResponse updateCustomer(@Valid CustomerRequest request, Jwt jwt) {
         Long userId = jwt.getClaim("userId");
         Customer customerToUpdate = getCustomer(userId);
         customerToUpdate.setName(request.getName());
         customerToUpdate.setAddress(request.getAddress());
         customerToUpdate.setPhone(request.getPhone());
-        return customerRepository.save(customerToUpdate);
+        customerRepository.save(customerToUpdate);
+        return mapper.toCustomerResponse(customerToUpdate);
     }
 
 }

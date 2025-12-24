@@ -1,16 +1,18 @@
 package org.ecommerce.ecommerce_service.services;
 
-import jakarta.persistence.EntityNotFoundException;
+import commons.utils.Exceptions.InsufficientStockException;
+import commons.utils.Exceptions.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.ecommerce.ecommerce_service.dto.OrderConfirmation;
 import org.ecommerce.ecommerce_service.dto.PaymentResponse;
+import org.ecommerce.ecommerce_service.dto.order.OrderResponse;
 import org.ecommerce.ecommerce_service.kafka.OrderProducer;
+import org.ecommerce.ecommerce_service.mappers.OrderMapper;
 import org.ecommerce.ecommerce_service.models.*;
 import org.ecommerce.ecommerce_service.proxies.PaymentProxy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.ecommerce.ecommerce_service.dto.PaymentRequest;
-import org.ecommerce.ecommerce_service.exceptions.InsufficientStockException;
 import org.ecommerce.ecommerce_service.repositories.CartRepository;
 import org.ecommerce.ecommerce_service.repositories.ItemRepository;
 import org.ecommerce.ecommerce_service.repositories.OrderRepository;
@@ -32,9 +34,10 @@ public class OrderService {
     private final PaymentProxy paymentProxy;
     private final ItemService itemService;
     private final OrderProducer orderProducer;
+    private final OrderMapper orderMapper;
 
     @Transactional
-    public Order placeOrder(Long userId,String email) {
+    public OrderResponse placeOrder(Long userId, String email) {
         Cart cart = cartService.getCart(userId);
         Customer customer = customerService.getCustomer(userId);
         if (cart.getCartItems().isEmpty()) {
@@ -65,16 +68,17 @@ public class OrderService {
                         customer
                 )
         );
-        return orderRepository.save(savedOrder);
+        orderRepository.save(savedOrder);
+        return orderMapper.toOrderResponse(savedOrder);
     }
 
     @Transactional
-    public Order cancelOrder(Long orderId) {
-        Order order = getOrderById(orderId);
+    public OrderResponse cancelOrder(Long orderId) {
+        Order order = getOrder(orderId);
         order.cancel();
         restoreStock(order);
         Order cancelledOrder = orderRepository.save(order);
-        return cancelledOrder;
+        return orderMapper.toOrderResponse(cancelledOrder);
     }
 
     @Transactional
@@ -113,13 +117,21 @@ public class OrderService {
     }
 
     @Transactional(readOnly = true)
-    public List<Order> getUserOrders(Long userId) {
-        return orderRepository.findAllByUserIdOrderByCreatedAtDesc(userId);
+    public List<OrderResponse> getUserOrders(Long userId) {
+        return orderRepository.findAllByUserIdOrderByCreatedAtDesc(userId).stream()
+                .map(orderMapper::toOrderResponse)
+                .toList();
     }
 
-    public Order getOrderById(Long orderId) {
+    private Order getOrder(Long orderId) {
         return orderRepository.findById(orderId)
-                .orElseThrow(() -> new EntityNotFoundException("Order not found with id: " + orderId));
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+    }
+
+    public OrderResponse getOrderById(Long orderId) {
+        Order order = orderRepository.findById(orderId)
+                .orElseThrow(() -> new ResourceNotFoundException("Order not found with id: " + orderId));
+        return orderMapper.toOrderResponse(order);
     }
 
     private void checkForPendingOrders(Long userId) {
