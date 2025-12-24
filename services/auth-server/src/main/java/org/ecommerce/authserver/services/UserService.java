@@ -1,9 +1,10 @@
 package org.ecommerce.authserver.services;
+import commons.utils.Exceptions.ResourceNotFoundException;
+import commons.utils.Exceptions.UserAlreadyExists;
 import lombok.RequiredArgsConstructor;
 import org.ecommerce.authserver.dto.*;
 import org.ecommerce.authserver.entities.User;
-import org.ecommerce.authserver.exceptions.UserAlreadyExists;
-import org.ecommerce.authserver.exceptions.UserNotFoundException;
+import org.ecommerce.authserver.mapper.UserMapper;
 import org.ecommerce.authserver.proxies.CustomerServiceClient;
 import org.ecommerce.authserver.repositories.UserRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -19,9 +20,10 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CustomerServiceClient customerServiceClient;
+    private final UserMapper mapper;
 
     @Transactional
-    public User register(UserRegisterRequest userRegisterRequest) {
+    public UserRegisterResponse register(UserRegisterRequest userRegisterRequest) {
         if(isUserExist(userRegisterRequest.email())){
             throw new UserAlreadyExists("this email registered already: " + userRegisterRequest.email() );
         }
@@ -32,7 +34,7 @@ public class UserService {
                 .build();
         User savedUser = userRepository.save(newUser);
         customerServiceClient.createCustomer(savedUser.getId());
-        return savedUser;
+        return mapper.toRegisterResponse(savedUser);
     }
 
     public List<UserRegisterResponse> getAllUsers() {
@@ -55,7 +57,7 @@ public class UserService {
 
     public User getUserById(Long userId) {
         return userRepository.findById(userId).orElseThrow(
-                () -> new UserNotFoundException("no user with id: " + userId)
+                () -> new ResourceNotFoundException("no user with id: " + userId)
         );
     }
 

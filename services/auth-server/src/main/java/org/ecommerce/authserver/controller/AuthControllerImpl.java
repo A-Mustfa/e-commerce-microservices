@@ -22,12 +22,11 @@ import java.util.List;
 public class AuthControllerImpl implements AuthController {
 
     private final UserService userService;
-    private final UserMapper mapper;
     private final JwtService jwtService;
 
     @Override
     public ResponseEntity<UserRegisterResponse> registerUser(@Valid @RequestBody UserRegisterRequest userRegisterRequest){
-        UserRegisterResponse response = mapper.toRegisterResponse(userService.register(userRegisterRequest));
+        UserRegisterResponse response = userService.register(userRegisterRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 

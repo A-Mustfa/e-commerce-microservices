@@ -2,12 +2,15 @@ package org.ecommerce.payment.service;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import commons.utils.Exceptions.InsufficientFundsException;
+import commons.utils.Exceptions.ResourceNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.ecommerce.payment.dto.PaymentRequest;
 import org.ecommerce.payment.dto.CustomerData;
+import org.ecommerce.payment.dto.PaymentResponse;
 import org.ecommerce.payment.entities.Payment;
-import org.ecommerce.payment.exceptions.InsufficientFundsException;
+import org.ecommerce.payment.mapper.PaymentMapper;
 import org.ecommerce.payment.repository.PaymentRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -15,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,9 +26,10 @@ public class PaymentService {
 
     private final PaymentRepository paymentRepo;
     private final ObjectMapper objectMapper;
+    private final PaymentMapper paymentMapper;
 
     @Transactional(noRollbackFor = InsufficientFundsException.class)
-    public Payment purchaseOrder(PaymentRequest paymentRequest) throws IOException {
+    public PaymentResponse purchaseOrder(PaymentRequest paymentRequest) throws IOException {
         double customerBalance = getCustomerBalance(paymentRequest.getUserId());
         Payment payment = Payment.builder()
                 .customerId(paymentRequest.getUserId())
@@ -38,7 +43,8 @@ public class PaymentService {
             throw new InsufficientFundsException("Sorry! you don't have enough money");
         }
         payment.setStatus(Payment.PaymentStatus.PAYED);
-        return paymentRepo.save(payment);
+        paymentRepo.save(payment);
+        return paymentMapper.toPaymentResponse(payment);
     }
 
     private boolean validateBalance(double customerBalance, PaymentRequest paymentRequest) {
@@ -48,12 +54,14 @@ public class PaymentService {
         return true;
     }
 
-    public List<Payment> getAllPayments() {
+    public List<PaymentResponse> getAllPayments() {
         List<Payment> existingPayments = paymentRepo.findAllPayments()
                 .orElseThrow(
-                       () -> new EntityNotFoundException("No Payments found")
+                       () -> new ResourceNotFoundException("No Payments found")
         );
-        return existingPayments;
+        return existingPayments.stream()
+                .map(paymentMapper::toPaymentResponse)
+                .collect(Collectors.toList());
     }
 
     private double getCustomerBalance(Long userId) throws IOException {
