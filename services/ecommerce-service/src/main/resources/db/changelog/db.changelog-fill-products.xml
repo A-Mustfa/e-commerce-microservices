@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+                   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+                   xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                   https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
+
+    <changeSet id="001" author="ahmed">
+        <insert tableName="item">
+            <column name="name" value="pen"></column>
+            <column name="description" value="writing items"></column>
+            <column name="price" value="70"></column>
+            <column name="stock" value="50"></column>
+        </insert>
+    </changeSet>
+</databaseChangeLog>
