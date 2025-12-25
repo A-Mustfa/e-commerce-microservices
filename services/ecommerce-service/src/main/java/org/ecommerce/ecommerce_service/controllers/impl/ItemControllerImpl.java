@@ -23,32 +23,40 @@ import java.util.List;
 public class ItemControllerImpl implements ItemController {
 
     private final ItemService itemService;
-    
+
     @Override
+    @PostMapping("/add")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ItemResponse> addNewItem(@Valid @RequestBody ItemRequest itemRequest){
         ItemResponse itemResponse = itemService.createItem(itemRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(itemResponse);
     }
 
     @Override
+    @DeleteMapping("/remove/{itemId}")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> removeItem(@PathVariable Long itemId){
         itemService.removeItem(itemId);
         return ResponseEntity.noContent().build();
     }
 
     @Override
+    @PatchMapping("/quantity")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ItemResponse> updateQuantity(@Valid @RequestBody UpdateItemRequest updateItemRequest){
         ItemResponse response = itemService.updateQuantity(updateItemRequest);
         return ResponseEntity.ok().body(response);
     }
 
     @Override
+    @GetMapping("/all")
     public ResponseEntity<List<ItemResponse>> findAllItem(){
         List<ItemResponse> response = itemService.getAllItems();
         return ResponseEntity.ok().body(response);
     }
 
     @Override
+    @GetMapping("/{itemId}")
     public ResponseEntity<ItemResponse> findItem(@PathVariable Long itemId){
         ItemResponse response = itemService.getItemById(itemId);
         return ResponseEntity.ok().body(response);

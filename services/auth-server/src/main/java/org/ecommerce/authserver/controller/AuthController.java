@@ -152,5 +152,5 @@ public interface AuthController {
     )
     @PatchMapping("/postpone/{userId}")
     @PreAuthorize("hasRole('ADMIN')")
-    ResponseEntity showUserById(@PathVariable Long userId);
+    ResponseEntity suspendUserById(@PathVariable Long userId);
 }
