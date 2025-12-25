@@ -4,12 +4,12 @@ A comprehensive e-commerce platform built using microservices architecture with 
 
 ## 📋 Table of Contents
 
-- [Overview](#overview)
-- [Architecture](#architecture)
-- [Technologies Used](#technologies-used)
-- [Services](#services)
-- [Prerequisites](#prerequisites)
-- [Installation & Setup](#installation--setup)
+- [Overview](#-overview)
+- [Architecture](#-architecture)
+- [Technologies Used](#-technologies-used)
+- [Services](#-services)
+- [Prerequisites](#-prerequisites)
+- [Installation & Setup](#-installation--setup)
 - [API Documentation](#api-documentation)
 - [Postman Collection](#postman-collection)
 - [Security](#security)
