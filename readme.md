@@ -14,11 +14,12 @@ A comprehensive e-commerce platform built using microservices architecture with 
 - [Postman Collection](#postman-collection)
 - [Security](#security)
 - [Message Queue](#message-queue)
+- [Caching (Redis)](#-caching-redis)
 - [Database Schema](#database-schema)
 
 ## 🎯 Overview
 
-This is a production-ready e-commerce platform implementing microservices architecture with features including user authentication, product management, shopping cart, order processing, payment handling, and notifications.
+This is a production-ready e-commerce platform implementing microservices architecture with features including user authentication, product management, shopping cart, order processing, payment handling, notifications, and Redis-based caching for products to improve read performance and reduce database load.
 
 ## 🏗️ Architecture
 
@@ -69,6 +70,9 @@ The application follows a microservices architecture pattern with the following 
 - **Spring Data JPA** - Data access layer
 - **Hibernate** - ORM framework
 - **Liquibase** - Database version control and migration
+
+### Caching
+- **Redis** - Distributed cache used to cache product/item data for faster reads and reduced database load
 
 ### Message Queue
 - **Apache Kafka** - Event streaming platform
@@ -179,6 +183,7 @@ Asynchronous notification handling via Kafka.
 - **Maven 3.9+**
 - **SQL Server** (configured for localhost:1433)
 - **Docker & Docker Compose** (for Kafka)
+- **Redis** (default port 6379)
 
 ## 🚀 Installation & Setup
 
@@ -215,7 +220,10 @@ This starts:
 - Zookeeper on port 2181
 - Kafka on port 9092
 
-### 4. Start Services in Order
+### 4. Start Redis
+If Redis is not included in docker-compose, start it locally using Docker:
+
+### 5. Start Services in Order
 
 **Step 1: Config Server**
 ```bash
