@@ -16,6 +16,13 @@ spring:
         jwt:
           public-key-location: classpath:publickey.pem
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+  cache:
+    type: redis
+
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog/db.changelog-master.xml

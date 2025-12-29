@@ -40,34 +40,14 @@ public class OrderService {
     public OrderResponse placeOrder(Long userId, String email) {
         Cart cart = cartService.getCart(userId);
         Customer customer = customerService.getCustomer(userId);
-        if (cart.getCartItems().isEmpty()) {
-            throw new IllegalStateException("Cannot place order with empty cart");
-        }
+        isCartEmpty(cart);
         checkForPendingOrders(userId);
-        Order order = Order.createOrderFromCart(cart, customer);
-        order.setOrderItems(OrderItem.createOrderItems(order, cart));
+        Order order = getOrder(cart, customer);
         Order savedOrder = orderRepository.save(order);
-        PaymentRequest paymentRequest = PaymentRequest.builder()
-                .orderId(savedOrder.getId())
-                .userId(savedOrder.getUserId())
-                .amount(savedOrder.getAmount())
-                .build();
-        PaymentResponse response = paymentProxy.purchase(paymentRequest);
-        if(response.status().equals("DENIED")){
-            savedOrder.setOrderStatus(CANCELLED);
-        } else if (response.status().equals("PAYED")) {
-            savedOrder.setOrderStatus(CONFIRMED);
-            updateStock(savedOrder);
-            cartRepository.delete(cart);
-        }
-        orderProducer.sendConfirmation(
-                new OrderConfirmation(
-                        order.getId(),
-                        email,
-                        order.getAmount(),
-                        customer
-                )
-        );
+        PaymentRequest paymentRequest = createPayment(savedOrder);
+        PaymentResponse paymentResponse = paymentProxy.purchase(paymentRequest);
+        checkPaymentStatus(paymentResponse, savedOrder, cart);
+        sendOrderConfirmation(email, order, customer);
         orderRepository.save(savedOrder);
         return orderMapper.toOrderResponse(savedOrder);
     }
@@ -121,6 +101,47 @@ public class OrderService {
         return orderRepository.findAllByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(orderMapper::toOrderResponse)
                 .toList();
+    }
+
+    private void checkPaymentStatus(PaymentResponse response, Order savedOrder, Cart cart) {
+        if(response.status().equals("DENIED")){
+            savedOrder.setOrderStatus(CANCELLED);
+        } else if (response.status().equals("PAYED")) {
+            savedOrder.setOrderStatus(CONFIRMED);
+            updateStock(savedOrder);
+            cartRepository.delete(cart);
+        }
+    }
+
+    private static Order getOrder(Cart cart, Customer customer) {
+        Order order = Order.createOrderFromCart(cart, customer);
+        order.setOrderItems(OrderItem.createOrderItems(order, cart));
+        return order;
+    }
+
+    private void sendOrderConfirmation(String email, Order order, Customer customer) {
+        orderProducer.sendConfirmation(
+                new OrderConfirmation(
+                        order.getId(),
+                        email,
+                        order.getAmount(),
+                        customer
+                )
+        );
+    }
+
+    private PaymentRequest createPayment(Order savedOrder) {
+        return PaymentRequest.builder()
+                .orderId(savedOrder.getId())
+                .userId(savedOrder.getUserId())
+                .amount(savedOrder.getAmount())
+                .build();
+    }
+
+    private static void isCartEmpty(Cart cart) {
+        if (cart.getCartItems().isEmpty()) {
+            throw new IllegalStateException("Cannot place order with empty cart");
+        }
     }
 
     private Order getOrder(Long orderId) {
