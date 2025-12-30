@@ -13,10 +13,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.Caching;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -78,12 +79,37 @@ public class ItemService {
         return itemMapper.toItemResponse(item);
     }
 
-    @Cacheable(value = "item", key = "'all'")
-    public List<ItemResponse> getAllItems() {
-        List<ItemResponse> items = new ArrayList<>();
-        itemRepository.findAll().forEach(item ->
-                items.add(itemMapper.toItemResponse(item))
-        );
+    @Cacheable(value = "item", key = "#page + '-' + #pageSize + '-' + #orderBy + '-' + #orderDirection + '-' + (#search == null ? '' : #search)")
+    public List<ItemResponse> getAllItems(int page, int pageSize,String orderBy, String orderDirection,String search) {
+        Sort sort = null;
+        if(orderDirection.equals("asc")) {
+            sort = Sort.by(orderBy).ascending();
+        }else if(orderDirection.equals("desc")) {
+            sort = Sort.by(orderBy).descending();
+        }
+        Pageable pageRequest = PageRequest.of(page, pageSize,sort);
+        if(search == null) {
+            List<ItemResponse> items = itemRepository.findAll(pageRequest).map(itemMapper::toItemResponse).getContent();
+            return items;
+        }else{
+            return getItemsBySearch(search,pageRequest);
+        }
+    }
+
+    private Sort getSortType(String orderBy, String orderDirection) {
+        Sort sort = null;
+        if(orderDirection.equals("asc")) {
+            sort = Sort.by(orderBy).ascending();
+        }else if(orderDirection.equals("desc")) {
+            sort = Sort.by(orderBy).descending();
+        }
+        return sort;
+    }
+
+    public List<ItemResponse> getItemsBySearch(String search, Pageable  pageable) {
+        List<ItemResponse> items = itemRepository.findByNameLike("%" + search + "%", pageable)
+                .map(itemMapper::toItemResponse)
+                .getContent();
         return items;
     }
 }

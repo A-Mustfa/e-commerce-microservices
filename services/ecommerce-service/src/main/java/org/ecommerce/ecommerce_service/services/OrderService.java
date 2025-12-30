@@ -39,7 +39,6 @@ public class OrderService {
     private final ItemRepository itemRepository;
     private final CustomerService customerService;
     private final CartRepository cartRepository;
-    private final PaymentProxy paymentProxy;
     private final ItemService itemService;
     private final OrderProducer orderProducer;
     private final OrderMapper orderMapper;
@@ -130,16 +129,6 @@ public class OrderService {
         return orderRepository.findAllByUserIdOrderByCreatedAtDesc(userId).stream()
                 .map(orderMapper::toOrderResponse)
                 .toList();
-    }
-
-    private void checkPaymentStatus(PaymentResponse response, Order savedOrder, Cart cart) {
-        if(response.status().equals("DENIED")){
-            savedOrder.setOrderStatus(CANCELLED);
-        } else if (response.status().equals("PAYED")) {
-            savedOrder.setOrderStatus(CONFIRMED);
-            updateStock(savedOrder);
-            cartRepository.delete(cart);
-        }
     }
 
     private static Order getOrder(Cart cart, Customer customer) {

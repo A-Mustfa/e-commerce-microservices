@@ -50,9 +50,13 @@ public class ItemControllerImpl implements ItemController {
 
     @Override
     @GetMapping("/all")
-    public ResponseEntity<List<ItemResponse>> findAllItem(){
-        List<ItemResponse> response = itemService.getAllItems();
-        return ResponseEntity.ok().body(response);
+    public ResponseEntity<List<ItemResponse>> findAllItem(@RequestParam(required = false, defaultValue = "0") int page,
+                                                          @RequestParam(required = false, defaultValue = "10")int pageSize,
+                                                          @RequestParam(required = false, defaultValue = "id") String orderBy,
+                                                          @RequestParam(required = false, defaultValue = "asc") String orderDirection,
+                                                          @RequestParam(required = false) String search) {
+        List<ItemResponse> response = itemService.getAllItems(page,pageSize,orderBy,orderDirection,search);
+        return ResponseEntity.ok(response);
     }
 
     @Override

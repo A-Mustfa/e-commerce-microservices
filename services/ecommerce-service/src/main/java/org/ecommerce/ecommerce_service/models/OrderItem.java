@@ -44,8 +44,10 @@ public class OrderItem {
     private static OrderItem createOrderItem(Order order, CartItem cartItem) {
         OrderItem orderItem = new OrderItem();
         orderItem.setOrder(order);
-        orderItem.setItemId(cartItem.getItem().getId());
-        orderItem.setName(cartItem.getItem().getName());
+
+        Item item = cartItem.getItem();
+        orderItem.setItemId(item.getId());
+        orderItem.setName(item.getName());
         orderItem.setQuantity(cartItem.getQuantity());
         orderItem.setUnitPrice(cartItem.getUnitPrice());
         orderItem.setTotalPrice(cartItem.getTotalPrice());

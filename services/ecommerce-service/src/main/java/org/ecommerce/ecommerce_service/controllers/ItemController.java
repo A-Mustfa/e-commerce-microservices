@@ -135,7 +135,7 @@ public interface ItemController {
             }
     )
     @GetMapping("/all")
-    ResponseEntity<List<ItemResponse>> findAllItem();
+    ResponseEntity<List<ItemResponse>> findAllItem(@RequestParam(required = false, defaultValue = "0") int page , @RequestParam(required = false, defaultValue = "10") int pageSize,String orderBy, String orderDirection,String search);
 
     @Operation(
             summary = "Get item by ID",

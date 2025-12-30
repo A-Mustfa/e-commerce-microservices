@@ -16,8 +16,6 @@ import java.util.Map;
 @RestControllerAdvice
 public class ExceptionHandling {
 
-
-
     @ExceptionHandler(ResourceNotFoundException.class)
     public ResponseEntity<ErrorResponse> ResourceNotFoundException(ResourceNotFoundException ex, HttpServletRequest request) {
         return handle(HttpStatus.NOT_FOUND, request, ex);
