@@ -10,12 +10,20 @@ import org.ecommerce.ecommerce_service.kafka.OrderProducer;
 import org.ecommerce.ecommerce_service.mappers.OrderMapper;
 import org.ecommerce.ecommerce_service.models.*;
 import org.ecommerce.ecommerce_service.proxies.PaymentProxy;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.ecommerce.ecommerce_service.dto.PaymentRequest;
 import org.ecommerce.ecommerce_service.repositories.CartRepository;
 import org.ecommerce.ecommerce_service.repositories.ItemRepository;
 import org.ecommerce.ecommerce_service.repositories.OrderRepository;
+import org.springframework.web.client.RestTemplate;
+
 import java.util.List;
 import java.util.Optional;
 import static org.ecommerce.ecommerce_service.models.Order.OrderStatus.CANCELLED;
@@ -35,6 +43,7 @@ public class OrderService {
     private final ItemService itemService;
     private final OrderProducer orderProducer;
     private final OrderMapper orderMapper;
+    private final RestTemplate restTemplate;
 
     @Transactional
     public OrderResponse placeOrder(Long userId, String email) {
@@ -45,12 +54,32 @@ public class OrderService {
         Order order = getOrder(cart, customer);
         Order savedOrder = orderRepository.save(order);
         PaymentRequest paymentRequest = createPayment(savedOrder);
-        PaymentResponse paymentResponse = paymentProxy.purchase(paymentRequest);
-        checkPaymentStatus(paymentResponse, savedOrder, cart);
+        PaymentResponse paymentResponse = getPaymentResponse(paymentRequest);
+        if(paymentResponse.status().equals("DENIED")){
+            savedOrder.setOrderStatus(CANCELLED);
+        } else if (paymentResponse.status().equals("PAYED")) {
+            savedOrder.setOrderStatus(CONFIRMED);
+            updateStock(savedOrder);
+            cartService.clearCart(userId);
+        }
         sendOrderConfirmation(email, order, customer);
         orderRepository.save(savedOrder);
         return orderMapper.toOrderResponse(savedOrder);
     }
+
+    private PaymentResponse getPaymentResponse(PaymentRequest paymentRequest) {
+        String url = "http://localhost:8800/api/v1/payments/purchase";
+        HttpHeaders headers = new HttpHeaders();
+        headers.add("content-type", "application/json");
+        headers.add("charset", "utf-8");
+        JwtAuthenticationToken authentication = (JwtAuthenticationToken) SecurityContextHolder.getContext().getAuthentication();
+        headers.add("Authorization", "Bearer " + authentication.getToken().getTokenValue() );
+        HttpEntity<PaymentRequest> request = new HttpEntity<>(paymentRequest, headers);
+        ResponseEntity<PaymentResponse> response = restTemplate.exchange(url, HttpMethod.POST, request, PaymentResponse.class);
+        PaymentResponse paymentResponse = response.getBody();
+        return paymentResponse;
+    }
+
 
     @Transactional
     public OrderResponse cancelOrder(Long orderId) {
