@@ -9,7 +9,6 @@ import org.ecommerce.ecommerce_service.dto.order.OrderResponse;
 import org.ecommerce.ecommerce_service.kafka.OrderProducer;
 import org.ecommerce.ecommerce_service.mappers.OrderMapper;
 import org.ecommerce.ecommerce_service.models.*;
-import org.ecommerce.ecommerce_service.proxies.PaymentProxy;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
